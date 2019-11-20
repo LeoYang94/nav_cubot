@@ -29,12 +29,12 @@ public:
 
 private:
   bool SetSerial(serial::Serial *const ser) const;
-  void SendCmdVel(const geometry_msgs::Twist &cmd_vel) const;
+  void SendCmdVel(const geometry_msgs::Twist cmd_vel) const;
   bool GetFilterOdomData(std::vector<uint8_t> &odom_raw,
                          Odom *const odom) const;
   bool MiddleFilter(Odom *const odom) const;
-  void PublishOdom(const Odom &odom, ros::Time current_time) const;
-  void PublishTf(const Odom &odom, ros::Time current_time)const;
+  void PublishOdom(const Odom &odom, const ros::Time& current_time) const;
+  void PublishTf(const Odom &odom, const ros::Time& current_time)const;
 
 private:
   mutable serial::Serial ser_;

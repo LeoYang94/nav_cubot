@@ -1,0 +1,3 @@
+# set the udev rule , make the device_port be fixed by rplidar
+#
+ACTION=="add",KERNELS=="1-2:1.0",SUBSYSTEMS=="usb",MODE:="0777",SYMLINK+="rplidar_nav"

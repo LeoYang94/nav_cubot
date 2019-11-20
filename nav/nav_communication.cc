@@ -24,9 +24,9 @@ NavCommunication::NavCommunication(const ros::NodeHandle &n,
   ROS_INFO_STREAM("Start initial serial port..");
   ROS_ASSERT(SetSerial(&ser_));
   ROS_INFO_STREAM("Initilization complete");
-  sub_ = n_.subscribe(
-      "/cmd_vel_mux/input/teleop", 10, &NavCommunication::SendCmdVel,
-      this); // 10：不想等待太多，只想要最新的消息，所以取较小的数
+  sub_ =
+      n_.subscribe("/cubot/cmd_vel", 10, &NavCommunication::SendCmdVel,
+                   this); // 10：不想等待太多，只想要最新的消息，所以取较小的数
 }
 
 bool NavCommunication::ReadAndPubOdom() {
@@ -39,10 +39,12 @@ bool NavCommunication::ReadAndPubOdom() {
     //判断帧头
     if (odom_raw.size() == 4 &&
         (odom_raw[0] != 0xaa || odom_raw[1] != 0xaa || odom_raw[2] != 0xf1)) {
+      ROS_INFO_STREAM("Read odom raw data failed");
       odom_raw.clear();
       continue;
     }
     if (odom_raw.size() == kOdomDataSize) {
+      //ROS_INFO_STREAM("Read odom raw data success");
       if (!GetFilterOdomData(odom_raw, &odom)) {
         continue;
       }
@@ -50,15 +52,15 @@ bool NavCommunication::ReadAndPubOdom() {
       PublishOdom(odom, current_time);
       PublishTf(odom, current_time);
     }
+    ros::spinOnce();
   }
   //每一次读串口循环结束后，进入回调函数下发控制指令
-  ros::spinOnce();
 }
 
 bool NavCommunication::SetSerial(serial::Serial *const ser) const {
   ser->setPort(
       "/dev/usart_nav");    // usart_nav串口号(将电脑上的某个固定的usb口重命名为usart,放弃使用易变的/dev/ttyUSB*)
-  ser->setBaudrate(230400); //波特率
+  ser->setBaudrate(115200); //波特率
   serial::Timeout to =
       serial::Timeout::simpleTimeout(1000); //字节间读写超时设为1s
   ser->setTimeout(to);                      //设置串口超时
@@ -66,22 +68,23 @@ bool NavCommunication::SetSerial(serial::Serial *const ser) const {
   return ser->isOpen();
 }
 
-void NavCommunication::SendCmdVel(const geometry_msgs::Twist &cmd_vel) const {
+void NavCommunication::SendCmdVel(const geometry_msgs::Twist cmd_vel) const {
+  std::cout << "got the cmd_vel,sending it.." << std::endl;
   std::string first_str(1, 0xaa);
   std::string second_str(1, 0xf1);
   std::string send_data = first_str + second_str;
+  std::cout << "cmd_vel->x:" << cmd_vel.linear.x << std::endl;
+  std::cout << "cmd_vel->y:" << cmd_vel.linear.y << std::endl;
+  std::cout << "cmd_vel->z:" << cmd_vel.linear.z << std::endl;
   static uint8_t i = 0;
-  // vx
   i = 0;
   while (i < 8) {
     send_data += (*((char *)&cmd_vel.linear.x + (i++)));
   }
-  // vy
   i = 0;
   while (i < 8) {
     send_data += (*((char *)&cmd_vel.linear.y + (i++)));
   }
-  // v theata
   i = 0;
   while (i < 8) {
     send_data += (*((char *)&cmd_vel.angular.z + (i++)));
@@ -92,6 +95,8 @@ void NavCommunication::SendCmdVel(const geometry_msgs::Twist &cmd_vel) const {
   send_data += sum;
   static size_t number = 0;
   number = ser_.write(send_data);
+  ROS_INFO_STREAM("Write cmd vel data!");
+  std::cout << "number" << number << std::endl;
 }
 
 bool NavCommunication::GetFilterOdomData(std::vector<uint8_t> &odom_raw,
@@ -120,8 +125,11 @@ bool NavCommunication::GetFilterOdomData(std::vector<uint8_t> &odom_raw,
     odom->y = c2f.odom_serial[5];
     odom->angle = c2f.odom_serial[6];
     odom_raw.clear();
+   // std::cout << "odom.x: " << odom->x << std::endl;
+   // std::cout << "odom.y: " << odom->y << std::endl;
+   // std::cout << "odom.angle: " << odom->angle << std::endl;
     //中值滤波过滤跳变
-    MiddleFilter(odom);
+    // MiddleFilter(odom);
   }
   return true;
 }
@@ -148,7 +156,7 @@ bool NavCommunication::MiddleFilter(cubot::Odom *const odom) const {
 }
 
 void NavCommunication::PublishOdom(const cubot::Odom &odom,
-                                   ros::Time current_time) const {
+                                   const ros::Time &current_time) const {
   nav_msgs::Odometry odom_pub;
   odom_pub.header.stamp = current_time; //本消息的时间戳
   odom_pub.header.frame_id = "odom"; // 消息里的frame_id表示这些消息的参考原点
@@ -163,7 +171,7 @@ void NavCommunication::PublishOdom(const cubot::Odom &odom,
 }
 
 void NavCommunication::PublishTf(const cubot::Odom &odom,
-                                 ros::Time current_time) const {
+                                 const ros::Time &current_time) const {
   geometry_msgs::TransformStamped odom_trans;
   odom_trans.header.stamp = current_time;
   odom_trans.header.frame_id = "odom";
@@ -176,5 +184,4 @@ void NavCommunication::PublishTf(const cubot::Odom &odom,
   odom_trans.transform.rotation = odom_quat;
   odom_broadcaster_.sendTransform(odom_trans);
 }
-
 }
