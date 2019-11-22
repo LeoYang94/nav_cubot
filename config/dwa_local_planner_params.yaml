@@ -1,14 +1,15 @@
+#dwa局部规划参数
 DWAPlannerROS:
-# Robot Configuration Parameters - stdr robot
-  acc_lim_x: 0.3  # maximum is theoretically 2.0
+# Robot Configuration Parameters - nav robot
+  acc_lim_x: 1.0  # maximum is theoretically 2.0
   acc_lim_y: 0.0  # diff drive robot
-  acc_lim_th: 0.3
+  acc_lim_th: 2.0
 
-  max_trans_vel: 0.3 #choose slightly less than the base's capability
+  max_trans_vel: 0.55 #choose slightly less than the base's capability
   min_trans_vel: 0.1 #this is the min trans velocity when there is negligible rotational velocity
 
-  max_vel_x: 0.3
-  min_vel_x: -0.1
+  max_vel_x: 1.0
+  min_vel_x: -1.0
   max_vel_y: 0.0  #diff drive robot,don't need set vel_y
   min_vel_y: 0.0
 
@@ -16,8 +17,8 @@ DWAPlannerROS:
   min_rot_vel: 0.1  #this is the min angular velocity when there is negligible translational velocity
 
 # Goal Tolerance Parameters
-  yaw_goal_tolerance: 0.1  # 0.1 rad = 5.7 degree
-  xy_goal_tolerance: 0.12
+  yaw_goal_tolerance: 0.2  # 0.1 rad = 5.7 degree
+  xy_goal_tolerance: 0.15
   latch_xy_goal_tolerance: false
 
 # Forward Simulation Parameters
@@ -34,7 +35,7 @@ DWAPlannerROS:
   occdist_scale: 0.3            # 0.01
   forward_point_distance: 0.325 # 0.325
   stop_time_buffer: 0.2         # 0.2
-  scaling_speed: 0.20           # 0.25
+  scaling_speed: 0.25           # 0.25 //需要测试
   max_scaling_factor: 0.2       # 0.2
   publish_cost_grid: false
 

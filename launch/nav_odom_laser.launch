@@ -1,0 +1,10 @@
+<launch>
+  <!-- commuincation node -->
+  <node pkg="nav_cubot" type="nav_cubot_node" respawn="false" name="nav_communication" />
+  <node pkg="tf" type="static_transform_publisher" name="link1_broadcaster" args="0 0 0.1 0 0 0 1 base_footprint base_link 100" /> 
+
+  <!-- rplidar a1 -->
+  <include file="$(find rplidar_ros)/launch/rplidar.launch"/>
+  <node pkg="tf" type="static_transform_publisher" name="laser_base" args="-0.128 0.00 0.56 0 0 0 1 base_link laser 100" /> 
+
+</launch>

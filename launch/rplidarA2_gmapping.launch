@@ -1,0 +1,43 @@
+
+<launch>
+  <arg name="scan_topic"  default="scan" />
+  <arg name="base_frame"  default="base_footprint"/>
+  <arg name="odom_frame"  default="odom"/>
+
+  <node pkg="gmapping" type="slam_gmapping" name="slam_gmapping" output="screen">
+    <param name="base_frame" value="$(arg base_frame)"/>
+    <param name="odom_frame" value="$(arg odom_frame)"/>
+    <param name="map_update_interval" value="5.0"/>//地图更新时间间隔,缩小可以提高更新速度,但增加了计算负荷
+    <param name="maxUrange" value="6.0"/>//使用多远距离内的激光数据
+    <param name="maxRange" value="8.0"/>//最大激光雷达范围。范围内的无障碍区域在地图上显示为空闲区域。按maxUrange小于实际激光雷达范围小于=maxRange设置。
+    <param name="sigma" value="0.05"/>
+    <param name="kernelSize" value="1"/>
+    <param name="lstep" value="0.05"/>
+    <param name="astep" value="0.05"/>
+    <param name="iterations" value="10"/>//icp的迭代次数
+    <param name="lsigma" value="0.075"/>
+    <param name="ogain" value="3.0"/>
+    <param name="lskip" value="0"/>//跳过多少激光帧.为0,表示所有的激光都处理，尽可能为零，如果计算压力过大，可以改成1
+    <param name="minimumScore" value="50"/>//很重要，判断scanmatch是否成功的阈值，过高的话会使scanmatch失败，从而影响地图更新速率
+    <param name="srr" value="0.01"/>//以下四个参数是运动模型的噪声参数
+    <param name="srt" value="0.02"/>
+    <param name="str" value="0.01"/>
+    <param name="stt" value="0.02"/>
+    <param name="linearUpdate" value="0.5"/>
+    <param name="angularUpdate" value="0.436"/>
+    <param name="temporalUpdate" value="-1.0"/>//每距离上一次更新时间多久后处理一次扫描数据（秒）。小于0关闭基于时间的更新。
+    <param name="resampleThreshold" value="0.5"/>
+    <param name="particles" value="80"/>//很重要，粒子个数
+    <param name="xmin" value="-1.0"/>//map初始化的大小
+    <param name="ymin" value="-1.0"/>
+    <param name="xmax" value="1.0"/>
+    <param name="ymax" value="1.0"/>
+
+    <param name="delta" value="0.05"/>
+    <param name="llsamplerange" value="0.01"/>
+    <param name="llsamplestep" value="0.01"/>
+    <param name="lasamplerange" value="0.005"/>
+    <param name="lasamplestep" value="0.005"/>
+    <remap from="scan" to="$(arg scan_topic)"/>
+  </node>
+</launch>

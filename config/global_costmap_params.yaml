@@ -1,6 +1,5 @@
 #FileName: global_costmap_params.yaml
-#Copyright: 2016-2018 ROS小课堂 www.corvin.cn
-#Author: corvin
+#Author: leo
 #Description:
 #  全局代价地图参数配置文件,各参数的意义如下：
 #  global_frame:在全局代价地图中的全局坐标系;
@@ -10,12 +9,13 @@
 #  20180613: initial this file.
 global_costmap:
   global_frame: /map
-  robot_base_frame: /robot0
-  update_frequency: 0.5
+  robot_base_frame: /base_footprint
+  update_frequency: 1.0 #全局代价地图更新频率，一般全局代价地图更新频率设置的比较小
+  publish_frequency: 0.5
   static_map: true
   rolling_window: false
-  transform_tolerance: 1.0
-  plugins:
+  transform_tolerance: 1.0 #坐标系转换可以忍受的最大延迟
+  plugins:     # - {name: obstacle_layer,  type: "costmap_2d::ObstacleLayer"}
     - {name: static_layer,    type: "costmap_2d::StaticLayer"}
-    - {name: obstacle_layer,  type: "costmap_2d::ObstacleLayer"}
+
     - {name: inflation_layer, type: "costmap_2d::InflationLayer"}

@@ -1,0 +1,25 @@
+<!-- ROS navigation move_base config file -->
+<launch>
+  <arg name="custom_param_file" default="$(find nav_cubot)/config/dummy.yaml"/><!--如果没有用户定制参数，则载入此空参数文件--> 
+  <node pkg="move_base" type="move_base" respawn="false" name="move_base" output="screen">
+    <!--地图参数-->  
+    <rosparam file="$(find nav_cubot)/config/costmap_common_params.yaml" command="load" ns="global_costmap" />
+    <rosparam file="$(find nav_cubot)/config/costmap_common_params.yaml" command="load" ns="local_costmap" />   
+    <rosparam file="$(find nav_cubot)/config/local_costmap_params.yaml" command="load" />   
+    <rosparam file="$(find nav_cubot)/config/global_costmap_params.yaml" command="load" />
+    <!--movebase参数-->  
+    <rosparam file="$(find nav_cubot)/config/move_base_params.yaml" command="load" />
+    <!--路径规划参数-->  
+    <rosparam file="$(find nav_cubot)/config/global_planner_params.yaml" command="load" />
+    <rosparam file="$(find nav_cubot)/config/dwa_local_planner_params.yaml" command="load" />
+    <rosparam file="$(arg custom_param_file)" command="load" />
+    <!-- tf名称 -->
+    <param name="global_costmap/global_frame" value="map"/>
+    <param name="global_costmap/robot_base_frame" value="base_footprint"/>
+    <param name="local_costmap/global_frame" value="odom"/>
+    <param name="local_costmap/robot_base_frame" value="base_footprint"/>
+    <param name="DWAPlannerROS/global_frame_id" value="odom"/>
+
+    <remap from="cmd_vel" to="/navigation/cmd_vel"/><!--将movebase发出的速度消息cmd_vel重命名为raw_cmd_vel-->  
+  </node>
+</launch>

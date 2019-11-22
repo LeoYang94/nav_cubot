@@ -1,0 +1,18 @@
+#global planner参数
+GlobalPlanner:
+  allow_unknown: true # 是否允许规划到未知区域上去【需和costmap_common_params.yaml中的track_unknown_space:配合】
+  default_tolerance: 0.2 #当设置的目的地被障碍物占据时,需要以该参数为半径寻找到最近的点作为新目的地点
+  visualize_potential: false
+  use_dijkstra: true #默认使用dijkstra，否则使用A*
+  use_quadratic: true # 用不用函数的二次函数模拟，这个比较好。如果想降低计算量，就设为false
+  use_grid_path: false
+  old_navfn_behavior: false #旧的ros版本使用，这里不再使用
+
+  planner_window_x: 0.0 # default 0.0限制规划器的工作空间，用于在特大地图中的一个局部内区域规划的情况
+  planner_window_y: 0.0 # default 0.0
+  lethal_cost: 253 #致命代价值,默认是设置为253,可以动态来配置该参数.
+  neutral_cost: 50 #中等代价值,默认设置是50,可以动态配置该参数.
+  cost_factor: 3.0 #代价地图与每个代价值相乘的因子.
+  publish_potential: true
+  orientation_mode: 0 #如何设置每个点的方向（None = 0,Forward = 1,Interpolate = 2,ForwardThenInterpolate = 3,Backward = 4,Leftward = 5,Rightward = 6）（可动态重新配置）
+  orientation_window_size: 1 #根据orientation_mode指定的位置积分来得到使用窗口的方向.默认值1,可以动态重新配置.
