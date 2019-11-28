@@ -121,6 +121,7 @@ catkin_package(
 ## Your package locations should be listed before other locations
 include_directories(
         nav
+        speed_control
         ${catkin_INCLUDE_DIRS}
         ${serial_INCLUDE_DIRS}
 )
@@ -131,7 +132,9 @@ include_directories(
 # )
 add_library(${PROJECT_NAME}
         nav/nav_communication.cc
-        nav/odom.h nav/imu.h)
+        nav/odom.h nav/imu.h
+        speed_control/speed_command.cc
+        speed_control/speed_command.h)
 ## Add cmake target dependencies of the library
 ## as an example, code may need to be generated before libraries
 ## either from message generation or dynamic reconfigure
@@ -141,7 +144,7 @@ add_library(${PROJECT_NAME}
 ## With catkin_make all packages are built within a single CMake context
 ## The recommended prefix ensures that target names across packages don't collide
 add_executable(${PROJECT_NAME}_node nav/main.cc)
-
+add_executable(speed_control_node speed_control/main.cc)
 ## Rename C++ executable without prefix
 ## The above recommended prefix causes long target names, the following renames the
 ## target back to the shorter version for ease of user use
@@ -160,6 +163,10 @@ target_link_libraries(${PROJECT_NAME}_node
         ${PROJECT_NAME}
         ${catkin_LIBRARIES}
         ${serial_LIBRARIES}
+        )
+target_link_libraries(speed_control_node
+        ${PROJECT_NAME}
+        ${catkin_LIBRARIES}
         )
 #############
 ## Install ##

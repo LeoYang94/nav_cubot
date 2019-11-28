@@ -34,6 +34,7 @@ bool NavCommunication::ReadAndPubOdom() {
   const size_t kOdomDataSize = 29;
   Odom odom = {0.0, 0.0, 0.0, //声明里程计结构体
                0.0, 0.0, 0.0};
+  //ros::Rate loop_rate(10);
   while (ros::ok()) {
     ser_.read(odom_raw);
     //判断帧头
@@ -53,6 +54,7 @@ bool NavCommunication::ReadAndPubOdom() {
       PublishTf(odom, current_time);
     }
     ros::spinOnce();
+    //loop_rate.sleep();
   }
   //每一次读串口循环结束后，进入回调函数下发控制指令
 }
@@ -75,7 +77,7 @@ void NavCommunication::SendCmdVel(const geometry_msgs::Twist cmd_vel) const {
   std::string send_data = first_str + second_str;
   std::cout << "cmd_vel->x:" << cmd_vel.linear.x << std::endl;
   std::cout << "cmd_vel->y:" << cmd_vel.linear.y << std::endl;
-  std::cout << "cmd_vel->z:" << cmd_vel.linear.z << std::endl;
+  std::cout << "cmd_vel->z:" << cmd_vel.angular.z << std::endl;
   static uint8_t i = 0;
   i = 0;
   while (i < 8) {
