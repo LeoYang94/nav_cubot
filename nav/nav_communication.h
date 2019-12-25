@@ -24,6 +24,7 @@ class NavCommunication {
 public:
   explicit NavCommunication(const ros::NodeHandle &n,
                             const ros::Publisher &pub_odom,
+                            const ros::Publisher &pub_uwb,
                             const ros::Publisher &pub_imu);
   bool ReadAndPubOdom();
 
@@ -33,15 +34,19 @@ private:
   bool GetFilterOdomData(std::vector<uint8_t> &odom_raw,
                          Odom *const odom) const;
   bool MiddleFilter(Odom *const odom) const;
-  void PublishOdom(const Odom &odom, const ros::Time& current_time) const;
-  void PublishTf(const Odom &odom, const ros::Time& current_time)const;
+  void PublishOdom(const Odom &odom, const ros::Time &current_time) const;
+  void PublishUwbData(const Odom &odom, const ros::Time &current_time) const;
+  void PublishTf(const Odom &odom, const ros::Time &current_time) const;
+  void PublishUwbTf(const Odom &odom, const ros::Time &current_time) const;
 
 private:
   mutable serial::Serial ser_;
   ros::NodeHandle n_;
-  ros::Publisher pub_odom_;                   // odom topic 发布器
-  ros::Publisher pub_imu_;                    // imu topic 发布器
-  ros::Subscriber sub_;                       // cmd_vel订阅器
+  ros::Publisher pub_odom_;                           // odom topic 发布器
+  ros::Publisher pub_uwb_;                            // uwb topic 发布器
+  ros::Publisher pub_imu_;                            // imu topic 发布器
+  ros::Subscriber sub_;                               // cmd_vel订阅器
   mutable tf::TransformBroadcaster odom_broadcaster_; // odom tf发布器
+  mutable tf::TransformBroadcaster uwb_broadcaster_; // odom tf发布器
 };
 }

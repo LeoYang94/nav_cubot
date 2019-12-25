@@ -17,6 +17,9 @@ typedef struct Odometry {
   float vx;
   float vy;
   float w;
+  float uwb_x;
+  float uwb_y;
+  float uwb_angle;
 } Odom;
 
 }

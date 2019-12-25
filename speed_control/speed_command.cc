@@ -22,7 +22,7 @@ void SpeedCommand::SendSpeed(const double linear_x, const double linear_y,
                              const double angular_z) {
   ros::NodeHandle n;
   ros::Publisher pub_speed = n.advertise<geometry_msgs::Twist>(
-      "speed_cmd", 10); //发布odom消息,odom前面不需加/;
+      "cubot/cmd_vel", 10); //发布odom消息,odom前面不需加/;
   ros::Rate loop_rate(10);
   while (ros::ok()) {
     geometry_msgs::Twist cmd_vel;
